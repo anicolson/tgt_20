@@ -2,6 +2,8 @@
 chmod +x ./config.sh
 . ./config.sh
 
+cd ../DeepXi
+
 NETWORK='ResNetV3'
 D_MODEL=256
 N_BLOCKS=40
@@ -128,7 +130,7 @@ then
                     --mbatch_size       $MBATCH_SIZE                \
                     --inp_tgt_type      'MagXiGamma'                \
                     --map_type          'DBNormalCDF,DBLaplaceCDF'  \
-                    --map_params        ';0'                        \
+                    --map_params        'None;0.0'                  \
                     --sample_size       $SAMPLE_SIZE                \
                     --f_s               $F_S                        \
                     --T_d               $T_D                        \
