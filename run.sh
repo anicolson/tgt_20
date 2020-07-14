@@ -1,6 +1,17 @@
 #!/bin/bash
-chmod +x ./config.sh
-. ./config.sh
+
+DEMAND_VB=1
+
+if [ $DEMAND_VB ]
+then
+  chmod +x ./config_demand_vb.sh
+  . ./config_demand_vb.sh
+  DEMAND_VB_VER="_demand_vb"
+else
+  chmod +x ./config.sh
+  . ./config.sh
+  DEMAND_VB_VER=""
+fi
 
 cd ../DeepXi
 
@@ -25,9 +36,9 @@ MBATCH_SIZE=8
 
 # TO DO: s_stms, s_pow, s_pow_db, s_pow_bar
 
-if [ "$VER" == 'irm' ]
+if [ $VER$DEMAND_VB_VER == 'irm'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER                        \
+    python3 main.py --ver               $VER$DEMAND_VB_VER          \
                     --network           $NETWORK                    \
                     --d_model           $D_MODEL                    \
                     --n_blocks          $N_BLOCKS                   \
@@ -37,6 +48,7 @@ then
                     --causal            $CAUSAL                     \
                     --unit_type         $UNIT_TYPE                  \
                     --loss_fnc          "BinaryCrossentropy"        \
+                    --outp_act          "Sigmoid"                   \
                     --max_epochs        $MAX_EPOCHS                 \
                     --resume_epoch      0                           \
                     --test_epoch        $TEST_EPOCH                 \
@@ -54,6 +66,7 @@ then
                     --save_model        1                           \
                     --log_iter          0                           \
                     --eval_example      1                           \
+                    --val_flag          $VAL_FLAG                   \
                     --gain              $GAIN                       \
                     --train             $TRAIN                      \
                     --infer             $INFER                      \
@@ -68,9 +81,9 @@ then
                     --model_path        $MODEL_PATH
 fi
 
-if [ "$VER" == 'ibm' ]
+if [ $VER$DEMAND_VB_VER == 'ibm'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER                        \
+    python3 main.py --ver               $VER$DEMAND_VB_VER          \
                     --network           $NETWORK                    \
                     --d_model           $D_MODEL                    \
                     --n_blocks          $N_BLOCKS                   \
@@ -80,6 +93,7 @@ then
                     --causal            $CAUSAL                     \
                     --unit_type         $UNIT_TYPE                  \
                     --loss_fnc          "BinaryCrossentropy"        \
+                    --outp_act          "Sigmoid"                   \
                     --max_epochs        $MAX_EPOCHS                 \
                     --resume_epoch      0                           \
                     --test_epoch        $TEST_EPOCH                 \
@@ -97,6 +111,7 @@ then
                     --save_model        1                           \
                     --log_iter          0                           \
                     --eval_example      1                           \
+                    --val_flag          $VAL_FLAG                   \
                     --gain              $GAIN                       \
                     --train             $TRAIN                      \
                     --infer             $INFER                      \
@@ -111,10 +126,9 @@ then
                     --model_path        $MODEL_PATH
 fi
 
-# map_params needs fixing.
-if [ "$VER" == 'xi_gamma_bar' ]
+if [ $VER$DEMAND_VB_VER == 'xi_gamma_bar'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER                        \
+    python3 main.py --ver               $VER$DEMAND_VB_VER          \
                     --network           $NETWORK                    \
                     --d_model           $D_MODEL                    \
                     --n_blocks          $N_BLOCKS                   \
@@ -124,6 +138,7 @@ then
                     --causal            $CAUSAL                     \
                     --unit_type         $UNIT_TYPE                  \
                     --loss_fnc          "BinaryCrossentropy"        \
+                    --outp_act          "Sigmoid"                   \
                     --max_epochs        $MAX_EPOCHS                 \
                     --resume_epoch      0                           \
                     --test_epoch        $TEST_EPOCH                 \
@@ -142,6 +157,7 @@ then
                     --save_model        1                           \
                     --log_iter          0                           \
                     --eval_example      1                           \
+                    --val_flag          $VAL_FLAG                   \
                     --gain              $GAIN                       \
                     --train             $TRAIN                      \
                     --infer             $INFER                      \
@@ -156,9 +172,9 @@ then
                     --model_path        $MODEL_PATH
 fi
 
-if [ "$VER" == 'xi_gamma_db' ]
+if [ $VER$DEMAND_VB_VER == 'xi_gamma_db'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER                        \
+    python3 main.py --ver               $VER$DEMAND_VB_VER          \
                     --network           $NETWORK                    \
                     --d_model           $D_MODEL                    \
                     --n_blocks          $N_BLOCKS                   \
@@ -167,7 +183,8 @@ then
                     --max_d_rate        $MAX_D_RATE                 \
                     --causal            $CAUSAL                     \
                     --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquareError"           \
+                    --loss_fnc          "MeanSquaredError"          \
+                    --outp_act          "Linear"                    \
                     --max_epochs        $MAX_EPOCHS                 \
                     --resume_epoch      0                           \
                     --test_epoch        $TEST_EPOCH                 \
@@ -185,6 +202,7 @@ then
                     --save_model        1                           \
                     --log_iter          0                           \
                     --eval_example      1                           \
+                    --val_flag          $VAL_FLAG                   \
                     --gain              $GAIN                       \
                     --train             $TRAIN                      \
                     --infer             $INFER                      \
@@ -199,9 +217,9 @@ then
                     --model_path        $MODEL_PATH
 fi
 
-if [ "$VER" == 'xi_gamma' ]
+if [ $VER$DEMAND_VB_VER == 'xi_gamma'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER                        \
+    python3 main.py --ver               $VER$DEMAND_VB_VER          \
                     --network           $NETWORK                    \
                     --d_model           $D_MODEL                    \
                     --n_blocks          $N_BLOCKS                   \
@@ -210,7 +228,8 @@ then
                     --max_d_rate        $MAX_D_RATE                 \
                     --causal            $CAUSAL                     \
                     --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquareError"           \
+                    --loss_fnc          "MeanSquaredError"          \
+                    --outp_act          "ReLU"                      \
                     --max_epochs        200                         \
                     --resume_epoch      0                           \
                     --test_epoch        $TEST_EPOCH                 \
@@ -228,6 +247,7 @@ then
                     --save_model        1                           \
                     --log_iter          0                           \
                     --eval_example      1                           \
+                    --val_flag          $VAL_FLAG                   \
                     --gain              $GAIN                       \
                     --train             $TRAIN                      \
                     --infer             $INFER                      \
@@ -242,9 +262,9 @@ then
                     --model_path        $MODEL_PATH
 fi
 
-if [ "$VER" == 'xi_bar' ]
+if [ $VER$DEMAND_VB_VER == 'xi_bar'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER                        \
+    python3 main.py --ver               $VER$DEMAND_VB_VER          \
                     --network           $NETWORK                    \
                     --d_model           $D_MODEL                    \
                     --n_blocks          $N_BLOCKS                   \
@@ -254,6 +274,7 @@ then
                     --causal            $CAUSAL                     \
                     --unit_type         $UNIT_TYPE                  \
                     --loss_fnc          "BinaryCrossentropy"        \
+                    --outp_act          "Sigmoid"                   \
                     --max_epochs        $MAX_EPOCHS                 \
                     --resume_epoch      0                           \
                     --test_epoch        $TEST_EPOCH                 \
@@ -271,6 +292,7 @@ then
                     --save_model        1                           \
                     --log_iter          0                           \
                     --eval_example      1                           \
+                    --val_flag          $VAL_FLAG                   \
                     --gain              $GAIN                       \
                     --train             $TRAIN                      \
                     --infer             $INFER                      \
@@ -285,9 +307,9 @@ then
                     --model_path        $MODEL_PATH
 fi
 
-if [ "$VER" == 'xi_db' ]
+if [ $VER$DEMAND_VB_VER == 'xi_db'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER                        \
+    python3 main.py --ver               $VER$DEMAND_VB_VER          \
                     --network           $NETWORK                    \
                     --d_model           $D_MODEL                    \
                     --n_blocks          $N_BLOCKS                   \
@@ -296,7 +318,8 @@ then
                     --max_d_rate        $MAX_D_RATE                 \
                     --causal            $CAUSAL                     \
                     --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquareError"           \
+                    --loss_fnc          "MeanSquaredError"          \
+                    --outp_act          "Linear"                    \
                     --max_epochs        $MAX_EPOCHS                 \
                     --resume_epoch      0                           \
                     --test_epoch        $TEST_EPOCH                 \
@@ -314,6 +337,7 @@ then
                     --save_model        1                           \
                     --log_iter          0                           \
                     --eval_example      1                           \
+                    --val_flag          $VAL_FLAG                   \
                     --gain              $GAIN                       \
                     --train             $TRAIN                      \
                     --infer             $INFER                      \
@@ -328,9 +352,9 @@ then
                     --model_path        $MODEL_PATH
 fi
 
-if [ "$VER" == 'xi' ]
+if [ $VER$DEMAND_VB_VER == 'xi'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER                        \
+    python3 main.py --ver               $VER$DEMAND_VB_VER          \
                     --network           $NETWORK                    \
                     --d_model           $D_MODEL                    \
                     --n_blocks          $N_BLOCKS                   \
@@ -339,7 +363,8 @@ then
                     --max_d_rate        $MAX_D_RATE                 \
                     --causal            $CAUSAL                     \
                     --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquareError"           \
+                    --loss_fnc          "MeanSquaredError"          \
+                    --outp_act          "ReLU"                      \
                     --max_epochs        200                         \
                     --resume_epoch      0                           \
                     --test_epoch        $TEST_EPOCH                 \
@@ -357,6 +382,7 @@ then
                     --save_model        1                           \
                     --log_iter          0                           \
                     --eval_example      1                           \
+                    --val_flag          $VAL_FLAG                   \
                     --gain              $GAIN                       \
                     --train             $TRAIN                      \
                     --infer             $INFER                      \

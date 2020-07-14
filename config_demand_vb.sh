@@ -8,11 +8,11 @@ set -o noglob
 case `hostname` in
 "fist")  echo "Running on fist."
     LOG_PATH='/home/aaron/mnt/aaron/Dropbox/GitHub/tgt_20/log'
-    SET_PATH='/mnt/ssd/deep_xi_training_set'
+    SET_PATH='/mnt/ssd/DEMAND_VB'
     DATA_PATH='/home/aaron/data/'$PROJ_DIR
-    TEST_X_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noisy_speech'
-    TEST_S_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_clean_speech'
-    TEST_D_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noise'
+    TEST_X_PATH='/home/aaron/mnt/aaron/set/DEMAND_VB/noisy_testset_wav'
+    TEST_S_PATH='/home/aaron/mnt/aaron/set/DEMAND_VB/clean_testset_wav'
+    TEST_D_PATH='dummy'
     OUT_PATH='/home/aaron/mnt/aaron_root/mnt/hdd1/out/'$PROJ_DIR
     MODEL_PATH='/home/aaron/model/'$PROJ_DIR
     ;;
@@ -20,9 +20,9 @@ case `hostname` in
     LOG_PATH='/home/aaron/mnt/aaron/Dropbox/GitHub/tgt_20/log'
     SET_PATH='/home/aaron/set/deep_xi_training_set'
     DATA_PATH='/home/aaron/mnt/fist/data/'$PROJ_DIR
-    TEST_X_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noisy_speech'
-    TEST_S_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_clean_speech'
-    TEST_D_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noise'
+    TEST_X_PATH='/home/aaron/set/DEMAND_VB/noisy_testset_wav'
+    TEST_S_PATH='/home/aaron/set/DEMAND_VB/clean_testset_wav'
+    TEST_D_PATH='dummy'
     OUT_PATH='/home/aaron/mnt/aaron_root/mnt/hdd1/out/'$PROJ_DIR
     MODEL_PATH='/home/aaron/mnt/fist/model/'$PROJ_DIR
     ;;
@@ -30,9 +30,9 @@ case `hostname` in
     LOG_PATH='/home/aaron/mnt/aaron/Dropbox/GitHub/tgt_20'
     SET_PATH='/mnt/ssd/deep_xi_training_set'
     DATA_PATH='/home/aaron/mnt/fist/data/'$PROJ_DIR
-    TEST_X_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noisy_speech'
-    TEST_S_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_clean_speech'
-    TEST_D_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noise'
+    TEST_X_PATH='/home/aaron/mnt/aaron/set/DEMAND_VB/noisy_testset_wav'
+    TEST_S_PATH='/home/aaron/mnt/aaron/set/DEMAND_VB/clean_testset_wav'
+    TEST_D_PATH='dummy'
     OUT_PATH='/home/aaron/mnt/aaron_root/mnt/hdd1/out/'$PROJ_DIR
     MODEL_PATH='/home/aaron/mnt/fist/model/'$PROJ_DIR
     ;;
