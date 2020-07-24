@@ -78,6 +78,7 @@ INFER=0
 TEST=0
 OUT_TYPE='y'
 GAIN='mmse-lsa'
+RESET_INP_TGT=0
 
 for ARGUMENT in "$@"
 do
@@ -91,6 +92,7 @@ do
             TEST)                TEST=${VALUE} ;;
             OUT_TYPE)            OUT_TYPE=${VALUE} ;;
             GAIN)                GAIN=${VALUE} ;;
+            RESET_INP_TGT)       RESET_INP_TGT=${VALUE} ;;
             *)
     esac
 done

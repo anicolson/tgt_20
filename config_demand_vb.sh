@@ -18,7 +18,7 @@ case `hostname` in
     ;;
 "pinky-jnr")  echo "Running on pinky-jnr."
     LOG_PATH='/home/aaron/mnt/aaron/Dropbox/GitHub/tgt_20/log'
-    SET_PATH='/home/aaron/set/deep_xi_training_set'
+    SET_PATH='/home/aaron/set/DEMAND_VB'
     DATA_PATH='/home/aaron/mnt/fist/data/'$PROJ_DIR
     TEST_X_PATH='/home/aaron/set/DEMAND_VB/noisy_testset_wav'
     TEST_S_PATH='/home/aaron/set/DEMAND_VB/clean_testset_wav'
@@ -27,8 +27,8 @@ case `hostname` in
     MODEL_PATH='/home/aaron/mnt/fist/model/'$PROJ_DIR
     ;;
 "stink")  echo "Running on stink."
-    LOG_PATH='/home/aaron/mnt/aaron/Dropbox/GitHub/tgt_20'
-    SET_PATH='/mnt/ssd/deep_xi_training_set'
+    LOG_PATH='/home/aaron/mnt/aaron/Dropbox/GitHub/tgt_20/log'
+    SET_PATH='/mnt/ssd/DEMAND_VB'
     DATA_PATH='/home/aaron/mnt/fist/data/'$PROJ_DIR
     TEST_X_PATH='/home/aaron/mnt/aaron/set/DEMAND_VB/noisy_testset_wav'
     TEST_S_PATH='/home/aaron/mnt/aaron/set/DEMAND_VB/clean_testset_wav'
@@ -78,6 +78,7 @@ INFER=0
 TEST=0
 OUT_TYPE='y'
 GAIN='mmse-lsa'
+RESET_INP_TGT=0
 
 for ARGUMENT in "$@"
 do
@@ -91,6 +92,7 @@ do
             TEST)                TEST=${VALUE} ;;
             OUT_TYPE)            OUT_TYPE=${VALUE} ;;
             GAIN)                GAIN=${VALUE} ;;
+            RESET_INP_TGT)       RESET_INP_TGT=${VALUE} ;;
             *)
     esac
 done

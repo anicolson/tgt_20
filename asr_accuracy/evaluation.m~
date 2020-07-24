@@ -1,0 +1,165 @@
+clear all; close all; clc;
+
+%% SNR LEVEL AND NOISE SOURCE
+% noise_src = {'voice', 'street', 'f16', 'factory'}; % noise source.
+% snr_level = {'_-5dB', '_0dB', '_5dB', '_10dB', '_15dB'}; % SNR level.
+% legend_items = {'Noisy speech', 'DD', 'Clust. recon.', 'Xu2017', 'SEGAN', 'LSTM-IRM',  'cDeepXi', 'DeepXi'};
+
+%% FILE LISTS
+% hyp_trans.dir = {'/mnt/hdd1/out/tgt_20/hyp_trans/noisy_speech'};
+% ref_trans.paths = dir('/home/aaron/set/recon_2018/ref_trans/*.txt'); % reference transcripts.
+%
+% wer_mat = zeros(length(noise_src), length(hyp_trans.dir), length(snr_level));
+% for l=1:length(noise_src)
+%     for k=1:length(hyp_trans.dir)
+%         avg_wer = {}; % average word error rate.
+%         empty = {}; % number of empty files.
+%         for j=1:length(snr_level)
+%             empty{end+1} = 0; % number of empty files.
+%             avg_wer{end+1} = 0; % average word error rate.
+%             total = 0; % total files.
+%             for i = 1:length(ref_trans.paths)
+%                 if contains(ref_trans.paths(i).name(1:end-4), noise_src{l})
+%                     if exist([hyp_trans.dir{i}, '/', ref_trans.paths(i).name(1:end-4), snr_level{j}, '.txt'], 'file')
+%                         hyp_trans.string = fileread([hyp_trans.dir{i}, '/', ref_trans.paths(i).name(1:end-4), snr_level{j}, '.txt']);
+%                         ref_trans.string = fileread([ref_trans.paths(i).folder, '/', ref_trans.paths(i).name]);
+%                         if isempty(strtrim(hyp_trans.string))
+%                             empty{end} = empty{end} + 1;
+%                         end
+%                         avg_wer{end} = avg_wer{end} + WER(strtrim(hyp_trans.string), strtrim(ref_trans.string));
+%                         total = total + 1;
+%
+%                     else
+%                         error('Error: hypothesis file does not exist.')
+%                     end
+%                 end
+%             end
+%             avg_wer{end} = avg_wer{end}/total;
+%         end
+%         for j=1:length(snr_level)
+%             wer_mat(l,k,j) = 100*avg_wer{j}(1);
+%         end
+%     end
+%     subplot(2,2,l); plot(-5:5:15, squeeze(wer_mat(l,:,:))')
+% 	axis([-5 15 0 100])
+% end
+% legend(legend_items);
+% for l=1:length(hyp_trans.dir)
+%     fprintf('%s ', legend_items{l})
+%     for m=1:length(noise_src)
+%         for n=1:length(snr_level)
+%             fprintf('& %3.1f ', wer_mat(m,l,n))
+%         end
+%     end
+%     fprintf('\\\\\n')
+% end
+% for l=1:length(hyp_trans.dir)
+%     tmp = squeeze(wer_mat(:,l,:));
+%     fprintf('Mean WER%% for %s: %3.1f\n', legend_items{l}, mean(tmp(:)))
+% end
+
+%% PARAMETERS
+f_s = 16000; % sampling frequency (Hz).
+snr = -5:5:15; % SNR levels to test.
+
+%% HYPOTHESIS TRANSCRIPT DIRECTORY
+hyp_trans.dir = {
+    '/mnt/hdd1/out/tgt_20/hyp_trans/noisy_speech',...
+    };
+
+%% LIBRISPEECH TEST CLEAN DIRECTORY
+ref_trans.dir = '/mnt/hdd1/speech/librispeech/LibriSpeech/test-clean';
+
+%% OBJECTIVE SCORES DIRECTORY
+res_dir = 'log/results/objective_scores';
+if ~exist(res_dir, 'dir')
+    mkdir(res_dir)
+end
+
+%% OBJECTIVE SCORING
+for i = 1:length(hyp_trans.dir)
+
+    results = MapNested();
+    split_str = strsplit(hyp_trans.dir{i}, '/');
+    ver = split_str{end};
+    hyp_trans.paths = dir([hyp_trans.dir{i}, '/*.txt']);
+
+    for j = 1:length(hyp_trans.paths)
+
+        hyp_trans.string = fileread([hyp_trans.dir{i}, '/', hyp_trans.paths(j).name]);
+
+        split_str = strsplit(hyp_trans.paths(j).name, '_');
+        noise_src = split_str{2};
+        snr = split_str{3}(1:end-6);
+        split_str = strsplit(split_str{1}, '-');
+        speaker = split_str{1};
+        chapter = split_str{2};
+        utterance = split_str{3};
+
+        ref_trans.string = fileread([ref_trans.dir, '/', speaker, '/', ...
+            chapter, '/' speaker, '-', chapter, '.trans.txt']);
+        ref_trans.string = regexp(ref_trans.string, '\n', 'split');
+        ref_trans.string = ref_trans.string(~cellfun(@isempty, ...
+            regexp(ref_trans.string, [speaker, '-', chapter, '-', utterance])));
+        ref_trans.string = lower(erase(ref_trans.string, [speaker, '-', ...
+            chapter, '-', utterance, ' ']));
+        ref_trans.string = ref_trans.string{1};
+
+        wer = WER(strtrim(hyp_trans.string), strtrim(ref_trans.string));
+
+    
+        results = add_score(wer(1), results, noise_src, snr);
+
+    
+    
+        clc;
+        fprintf('%.2f%%\n', 100*j/length(hyp_trans.paths));
+    end
+    
+    % fileID = fopen([res_dir, '/', ver, '.csv'],'w');
+    % fprintf(fileID, 'noise_src, snr_db, CSIG, CBAK, COVL, PESQ, STOI\n');
+    % avg.CSIG = [];
+    % avg.CBAK = [];
+    % avg.COVL = [];
+    % avg.PESQ = [];
+    % avg.STOI = [];
+    % for j = 1:length(noise_src_set)
+    %     for k = snr
+    %
+    %         snr_str = num2str(k);
+    %
+    %         CSIG = mean(results(noise_src_set{j}, snr_str, 'CSIG'));
+    %         CBAK = mean(results(noise_src_set{j}, snr_str, 'CBAK'));
+    %         COVL = mean(results(noise_src_set{j}, snr_str, 'COVL'));
+    %         PESQ = mean(results(noise_src_set{j}, snr_str, 'PESQ'));
+    %         STOI = mean(results(noise_src_set{j}, snr_str, 'STOI'));
+    %
+    %         fprintf(fileID, '%s, %s, %.2f, %.2f, %.2f, %.2f, %.2f\n', ...
+    %             noise_src_set{j}, snr_str, ...
+    %             CSIG, CBAK, COVL, PESQ, 100*STOI);
+    %
+    %         avg.CSIG = [avg.CSIG; results(noise_src_set{j}, snr_str, 'CSIG')];
+    %         avg.CBAK = [avg.CBAK; results(noise_src_set{j}, snr_str, 'CBAK')];
+    %         avg.COVL = [avg.COVL; results(noise_src_set{j}, snr_str, 'COVL')];
+    %         avg.PESQ = [avg.PESQ; results(noise_src_set{j}, snr_str, 'PESQ')];
+    %         avg.STOI = [avg.STOI; results(noise_src_set{j}, snr_str, 'STOI')];
+    %
+    %     end
+    % end
+    % fclose(fileID);
+    %
+    % avg_path = [res_dir, '/average.csv'];
+    %
+    % if ~exist(avg_path, 'file')
+    %     fileID = fopen(avg_path, 'w');
+    %     fprintf(fileID, 'ver, CSIG, CBAK, COVL, PESQ, STOI\n');
+    %     fclose(fileID);
+    % end
+    %
+    % fileID = fopen(avg_path, 'a');
+    % fprintf(fileID, '%s, %.2f, %.2f, %.2f, %.2f, %.2f\n', ver, ...
+    %     mean(avg.CSIG), mean(avg.CBAK), mean(avg.COVL), ...
+    %     mean(avg.PESQ), 100*mean(avg.STOI));
+    % fclose(fileID);
+end
+% EOF

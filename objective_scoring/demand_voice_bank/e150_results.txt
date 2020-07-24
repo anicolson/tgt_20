@@ -1,0 +1,21 @@
+ver,                                  CSIG, CBAK, COVL, PESQ, STOI, SegSNR, SNR
+xi_db_demand_vb_e150_mmse-lsa,        4.15, 3.31, 3.48, 2.78, 93.54, 7.94, 16.44
+xi_db_std_demand_vb_e150_mmse-lsa,    4.12, 3.29, 3.43, 2.73, 93.37, 8.06, 16.48
+xi_bar_demand_vb_e150_mmse-lsa,       4.23, 3.40, 3.57, 2.87, 93.53, 8.65, 17.42
+xi_gamma_db_demand_vb_e150_mmse-lsa,  4.22, 3.39, 3.56, 2.86, 93.47, 8.56, 17.16
+xi_gamma_bar_demand_vb_e150_mmse-lsa, 4.24, 3.38, 3.57, 2.87, 93.51, 8.45, 17.26
+pow_db_demand_vb_e150,                3.98, 2.97, 3.27, 2.57, 89.83, 4.43, 9.77
+pow_db_std_demand_vb_e150,            3.98, 2.98, 3.25, 2.53, 90.04, 4.80, 9.84
+mag_bar_demand_vb_e150,               3.97, 2.82, 3.17, 2.36, 91.53, 3.42, 6.17
+ibm_demand_vb_e150_ibm,               2.12, 2.96, 2.04, 2.14, 92.94, 8.97, 17.45
+irm_demand_vb_e150_irm,               4.09, 3.34, 3.44, 2.78, 93.76, 8.61, 17.37
+mmse-stsa_db_demand_vb_e150,          3.70, 2.57, 2.96, 2.27, 90.49, 1.43, 7.99
+mmse-lsa_db_demand_vb_e150,           3.23, 2.19, 2.47, 1.83, 84.89, -0.19, 5.01
+xi_bar_demand_vb_e150_srwf,           4.21, 3.32, 3.52, 2.80, 93.61, 7.93, 16.73
+
+
+xi_bar_demand_vb_e150_srwf,           4.21, 3.32, 3.52, 2.80, 93.61, 7.93, 16.73
+xi_bar_demand_vb_e150_mmse-lsa,       4.23, 3.40, 3.57, 2.87, 93.53, 8.65, 17.42
+xi_gamma_bar_demand_vb_e150_mmse-lsa, 4.24, 3.38, 3.57, 2.87, 93.51, 8.45, 17.26
+irm_demand_vb_e150_irm,               4.09, 3.34, 3.44, 2.78, 93.76, 8.61, 17.37
+pow_db_std_demand_vb_e150,            3.98, 2.98, 3.25, 2.53, 90.04, 4.80, 9.84
