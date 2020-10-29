@@ -3,10 +3,12 @@
 
 ### Project status
 
-A manuscript for this paper is currently under review (*The Journal of the Acoustical Society of America*).
+A manuscript for this paper is currently under review for *The Journal of the Acoustical Society of America*.
 
 ### Summary
-This study utilises the [Deep Xi](https://github.com/anicolson/DeepXi) repository to compare training targets for clean speech magnitude spectrum. The `tgt_20` repository contains the code used to conduct the experiments for the project.
+ * This study compares training targets for deep learning approaches to clean speech magnitude spectrum. 
+ * The `tgt_20` repository contains the code used to conduct the experiments for the project.
+ * The code utilises the [Deep Xi](https://github.com/anicolson/DeepXi) repository ([https://github.com/anicolson/DeepXi](https://github.com/anicolson/DeepXi)).
 
 ### Citation
 
