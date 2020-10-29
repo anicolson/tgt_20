@@ -1,9 +1,19 @@
-%% AUTHOR:         Aaron Nicolson
-%% AFFILIATION:    Signal Processing Laboratory, Griffith University
-%%
-%% This Source Code Form is subject to the terms of the Mozilla Public
-%% License, v. 2.0. If a copy of the MPL was not distributed with this
-%% file, You can obtain one at http://mozilla.org/MPL/2.0/.
+% The tgt_20 project.
+% Copyright (C) 2020  Aaron Nicolson
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 clear all; close all; clc;
 
 % addpath('D:\Dropbox\lib\addnoise')
@@ -45,7 +55,7 @@ rand_idx = randperm(length(s.paths)); % random index for test files.
 
 %% SAMPLE
 set(0,'defaulttextinterpreter','latex')
-xi_samples = []; 
+xi_samples = [];
 gamma_samples = [];
 s_stms_samples = [];
 for i = 1:n_samples
@@ -56,12 +66,12 @@ for i = 1:n_samples
         d.idx = randi(length(d.paths)); % random noise signal.
         d.src = audioread([d.paths(d.idx).folder, '/', d.paths(d.idx).name]); % noise.
         d.len = length(d.src); % length of noise signal.
-        if d.len > s.len 
+        if d.len > s.len
             len_flag = false; % length of noise signal is longer than clean speech signal length.
         end
     end
     d.start_idx = randi(1+d.len-s.len); % random starting index of noise signal.
-    d.src = d.src(d.start_idx:d.start_idx+s.len-1); % extract random section of noise signal.         
+    d.src = d.src(d.start_idx:d.start_idx+s.len-1); % extract random section of noise signal.
     j = randperm(length(SNR),1);
     [x.wav, d.wav] = add_noise(s.wav, d.src(1:length(s.wav)), SNR(j)); % noisy speech and noise signal.
     s = analysis_stft(s, 'polar'); % clean speech STMS.
@@ -69,10 +79,10 @@ for i = 1:n_samples
     x = analysis_stft(x, 'polar'); % noisy speech STMS.
     xi = s.STMS.^2./d.STMS.^2; % instantaneous a priori SNR.
     gamma_ = x.STMS.^2./d.STMS.^2; % instantaneous a posteriori SNR.
-    
-    xi_samples = [xi_samples; single(xi)]; 
-    gamma_samples = [gamma_samples; single(gamma_)];  
-    s_stms_samples = [s_stms_samples; single(s.STMS)]; 
+
+    xi_samples = [xi_samples; single(xi)];
+    gamma_samples = [gamma_samples; single(gamma_)];
+    s_stms_samples = [s_stms_samples; single(s.STMS)];
 
     clc;
     fprintf('%3.2f%% completed.\n', 100*(i/n_samples));
@@ -110,12 +120,12 @@ s_stms_db_samples_k(s_stms_db_samples_k == Inf) = [];
 %% HISTOGRAMS
 figure (1)
 
-subplot(3,2,1);  
+subplot(3,2,1);
 histogram(s_stms_db_samples_k, N, 'BinLimits', [s_stms_db(1), s_stms_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey);
 xlim([s_stms_db(1), s_stms_db(end)])
 ylabel('Count');
-xlabel(['$|S_{\rm dB}[:,$', num2str(k-1), '$]|$']); 
+xlabel(['$|S_{\rm dB}[:,$', num2str(k-1), '$]|$']);
 title('{\bf (a)}')
 
 subplot(3,2,2);
@@ -123,7 +133,7 @@ histogram(s_stms_db_samples_k, N, 'BinLimits', [s_stms_db(1), s_stms_db(end)], .
     'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
 xlim([s_stms_db(1), s_stms_db(end)])
 ylim([0 1])
-xlabel(['$|S_{\rm dB}[:,$', num2str(k-1), '$]|$']); 
+xlabel(['$|S_{\rm dB}[:,$', num2str(k-1), '$]|$']);
 ylabel('Cumulative count');
 title('{\bf (b)}')
 
@@ -132,7 +142,7 @@ histogram(xi_db_samples_k, N, 'BinLimits', [xi_db(1), xi_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey);
 xlim([xi_db(1), xi_db(end)])
 ylabel('Count');
-xlabel(['$\xi_{\rm dB}[:,$', num2str(k-1), ']']); 
+xlabel(['$\xi_{\rm dB}[:,$', num2str(k-1), ']']);
 title('{\bf (c)}')
 
 subplot(3,2,4);
@@ -140,7 +150,7 @@ histogram(xi_db_samples_k, N, 'BinLimits', [xi_db(1), xi_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
 xlim([xi_db(1), xi_db(end)])
 ylim([0 1])
-xlabel(['$\xi_{\rm dB}[:,$', num2str(k-1), ']']); 
+xlabel(['$\xi_{\rm dB}[:,$', num2str(k-1), ']']);
 ylabel('Cumulative count');
 title('{\bf (d)}')
 
@@ -149,7 +159,7 @@ histogram(gamma_db_samples_k, N, 'BinLimits', [gamma_db(1), gamma_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey);
 xlim([gamma_db(1), gamma_db(end)])
 ylabel('Count');
-xlabel(['$\gamma_{\rm dB}[:,$', num2str(k-1), ']']); 
+xlabel(['$\gamma_{\rm dB}[:,$', num2str(k-1), ']']);
 title('{\bf (e)}')
 
 subplot(3,2,6);
@@ -157,6 +167,6 @@ histogram(gamma_db_samples_k, N, 'BinLimits', [gamma_db(1), gamma_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
 xlim([gamma_db(1), gamma_db(end)])
 ylim([0 1])
-xlabel(['$\gamma_{\rm dB}[:,$', num2str(k-1), ']']); 
+xlabel(['$\gamma_{\rm dB}[:,$', num2str(k-1), ']']);
 ylabel('Cumulative count');
 title('{\bf (f)}')

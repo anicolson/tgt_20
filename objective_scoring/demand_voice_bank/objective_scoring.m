@@ -1,9 +1,18 @@
-% AUTHOR:         Aaron Nicolson
-% AFFILIATION:    Signal Processing Laboratory, Griffith University
+% The tgt_20 project.
+% Copyright (C) 2020  Aaron Nicolson
 %
-% This Source Code Form is subject to the terms of the Mozilla Public
-% License, v. 2.0. If a copy of the MPL was not distributed with this
-% file, You can obtain one at http://mozilla.org/MPL/2.0/.
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 clear all; close all; clc;
 
@@ -73,7 +82,7 @@ for i = 1:length(y.dirs)
     S.STOI = [];
     S.SegSNR = [];
     S.SNR = [];
-    
+
     split_str = strsplit(y.dirs{i}, '/');
     if strcmp(split_str{end-1}, 'y')
         ver = [split_str{end-3}, '_', split_str{end-2}, '_', split_str{end}];
@@ -107,11 +116,11 @@ for i = 1:length(y.dirs)
         S.STOI(end+1) = STOI;
         S.SegSNR(end+1) = SegSNR;
         S.SNR(end+1) = SNR;
-        
+
         clc;
         fprintf('%.2f%%\n', 100*j/length(s.paths));
     end
-    
+
     save(['./results/', ver, '.mat'], 'S');
 
     if ~exist('./results/average.csv', 'file')

@@ -1,9 +1,19 @@
-%% AUTHOR:         Aaron Nicolson
-%% AFFILIATION:    Signal Processing Laboratory, Griffith University
-%%
-%% This Source Code Form is subject to the terms of the Mozilla Public
-%% License, v. 2.0. If a copy of the MPL was not distributed with this
-%% file, You can obtain one at http://mozilla.org/MPL/2.0/.
+% The tgt_20 project.
+% Copyright (C) 2020  Aaron Nicolson
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 clear all; close all; clc;
 
 % addpath('D:\Dropbox\lib\addnoise')
@@ -44,7 +54,7 @@ rand_idx = randperm(length(s.paths)); % random index for test files.
 
 %% SAMPLE
 set(0,'defaulttextinterpreter','latex')
-smm_samples = []; 
+smm_samples = [];
 for i = 1:n_samples
 	s.wav = audioread([s.paths(rand_idx(i)).folder, '/', s.paths(rand_idx(i)).name]); % clean speech.
     s.len = length(s.wav); % length of clean speech signal.
@@ -53,21 +63,21 @@ for i = 1:n_samples
         d.idx = randi(length(d.paths)); % random noise signal.
         d.src = audioread([d.paths(d.idx).folder, '/', d.paths(d.idx).name]); % noise.
         d.len = length(d.src); % length of noise signal.
-        if d.len > s.len 
+        if d.len > s.len
             len_flag = false; % length of noise signal is longer than clean speech signal length.
         end
     end
     d.start_idx = randi(1+d.len-s.len); % random starting index of noise signal.
-    d.src = d.src(d.start_idx:d.start_idx+s.len-1); % extract random section of noise signal.         
+    d.src = d.src(d.start_idx:d.start_idx+s.len-1); % extract random section of noise signal.
     j = randperm(length(SNR),1);
     [x.wav, d.wav] = add_noise(s.wav, d.src(1:length(s.wav)), SNR(j)); % noisy speech and noise signal.
     s = analysis_stft(s, 'polar'); % clean speech STMS.
     d = analysis_stft(d, 'polar'); % noise STMS.
     x = analysis_stft(x, 'polar'); % noisy speech STMS.
-    
-    smm = s.STMS./x.STMS; 
-    
-    smm_samples = [smm_samples; single(smm)]; 
+
+    smm = s.STMS./x.STMS;
+
+    smm_samples = [smm_samples; single(smm)];
 
     clc;
     fprintf('%3.2f%% completed.\n', 100*(i/n_samples));
@@ -87,12 +97,12 @@ smm_db_samples_k = 20*log10(smm_samples_k);
 %% HISTOGRAMS
 figure (1)
 
-subplot(2,2,1);  
+subplot(2,2,1);
 histogram(smm_samples_k, N, 'BinLimits', [smm(1), smm(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey);
 xlim([smm(1), smm(end)])
 ylabel('Count');
-xlabel(['${\rm SMM}[:,$', num2str(k-1), '$]$']); 
+xlabel(['${\rm SMM}[:,$', num2str(k-1), '$]$']);
 title('{\bf (a)}')
 
 subplot(2,2,2);
@@ -100,16 +110,16 @@ histogram(smm_samples_k, N, 'BinLimits', [smm(1), smm(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
 xlim([smm(1), smm(end)])
 ylim([0 1])
-xlabel(['${\rm SMM}[:,$', num2str(k-1), '$]$']); 
+xlabel(['${\rm SMM}[:,$', num2str(k-1), '$]$']);
 ylabel('Cumulative count');
 title('{\bf (b)}')
 
-subplot(2,2,3);  
+subplot(2,2,3);
 histogram(smm_db_samples_k, N, 'BinLimits', [smm_db(1), smm_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey);
 xlim([smm_db(1), smm_db(end)])
 ylabel('Count');
-xlabel(['${\rm SMM}[:,$', num2str(k-1), '$]$']); 
+xlabel(['${\rm SMM}[:,$', num2str(k-1), '$]$']);
 title('{\bf (a)}')
 
 subplot(2,2,4);
@@ -117,7 +127,6 @@ histogram(smm_db_samples_k, N, 'BinLimits', [smm_db(1), smm_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
 xlim([smm_db(1), smm_db(end)])
 ylim([0 1])
-xlabel(['${\rm SMM}[:,$', num2str(k-1), '$]$']); 
+xlabel(['${\rm SMM}[:,$', num2str(k-1), '$]$']);
 ylabel('Cumulative count');
 title('{\bf (b)}')
-
