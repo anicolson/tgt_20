@@ -1,53 +1,5 @@
 #!/bin/bash
 
-PROJ_DIR='tgt_20'
-NEGATIVE="-"
-
-set -o noglob
-
-case `hostname` in
-"fist")  echo "Running on fist."
-    LOG_PATH='/home/aaron/mnt/aaron/Dropbox/GitHub/tgt_20/log'
-    SET_PATH='/mnt/ssd/deep_xi_training_set'
-    DATA_PATH='/home/aaron/data/'$PROJ_DIR
-    TEST_X_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noisy_speech'
-    TEST_S_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_clean_speech'
-    TEST_D_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noise'
-    OUT_PATH='/home/aaron/mnt/aaron_root/mnt/hdd1/out/'$PROJ_DIR
-    MODEL_PATH='/home/aaron/model/'$PROJ_DIR
-    ;;
-"pinky-jnr")  echo "Running on pinky-jnr."
-    LOG_PATH='/home/aaron/mnt/aaron/Dropbox/GitHub/tgt_20/log'
-    SET_PATH='/home/aaron/set/deep_xi_training_set'
-    DATA_PATH='/home/aaron/mnt/fist/data/'$PROJ_DIR
-    TEST_X_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noisy_speech'
-    TEST_S_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_clean_speech'
-    TEST_D_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noise'
-    OUT_PATH='/home/aaron/mnt/aaron_root/mnt/hdd1/out/'$PROJ_DIR
-    MODEL_PATH='/home/aaron/mnt/fist/model/'$PROJ_DIR
-    ;;
-"stink")  echo "Running on stink."
-    LOG_PATH='/home/aaron/mnt/aaron/Dropbox/GitHub/tgt_20'
-    SET_PATH='/mnt/ssd/deep_xi_training_set'
-    DATA_PATH='/home/aaron/mnt/fist/data/'$PROJ_DIR
-    TEST_X_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noisy_speech'
-    TEST_S_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_clean_speech'
-    TEST_D_PATH='/home/aaron/mnt/aaron/set/deep_xi_test_set/test_noise'
-    OUT_PATH='/home/aaron/mnt/aaron_root/mnt/hdd1/out/'$PROJ_DIR
-    MODEL_PATH='/home/aaron/mnt/fist/model/'$PROJ_DIR
-    ;;
-*) echo "This workstation is not known. Using default paths."
-    LOG_PATH='log'
-    SET_PATH='set'
-    DATA_PATH='data'
-    TEST_X_PATH='set/test_noisy_speech'
-    TEST_S_PATH='set/test_clean_speech'
-    TEST_D_PATH='set/test_noise'
-    OUT_PATH='out'
-    MODEL_PATH='model'
-   ;;
-esac
-
 get_free_gpu () {
     NUM_GPU=$( nvidia-smi --query-gpu=pci.bus_id --format=csv,noheader | wc -l )
     echo "$NUM_GPU total GPU/s."
@@ -79,6 +31,8 @@ TEST=0
 OUT_TYPE='y'
 GAIN='mmse-lsa'
 RESET_INP_TGT=0
+RESUME_EPOCH=0
+DATASET=
 
 for ARGUMENT in "$@"
 do
@@ -93,13 +47,22 @@ do
             OUT_TYPE)            OUT_TYPE=${VALUE} ;;
             GAIN)                GAIN=${VALUE} ;;
             RESET_INP_TGT)       RESET_INP_TGT=${VALUE} ;;
+            RESUME_EPOCH)        RESUME_EPOCH=${VALUE} ;;
+            DATASET)             DATASET=${VALUE} ;;
             *)
     esac
 done
 
-WAIT=0
-if [ -z $GPU ]
+if [ hostname == 'n060' ]
 then
-    get_free_gpu $WAIT
-    GPU=$?
+	GPU=0
+else
+	WAIT=0
+	if [ -z $GPU ]
+	then
+	    get_free_gpu $WAIT
+	    GPU=$?
+	fi
 fi
+
+echo "Using GPU $GPU."

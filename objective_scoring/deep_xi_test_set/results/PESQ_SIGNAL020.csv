@@ -1,0 +1,12 @@
+noise, ver, -5, 0, 5, 10, 15
+SIGNAL020, noisy_speech, 1.04, 1.06, 1.11, 1.27, 1.58
+SIGNAL020, irm_mse_e150, 1.19, 1.44, 1.77, 2.17, 2.60
+SIGNAL020, irm_e150, 1.21, 1.45, 1.77, 2.16, 2.56
+SIGNAL020, mag_norm_e150, 1.29, 1.57, 1.93, 2.33, 2.69
+SIGNAL020, pow_db_e150, 1.25, 1.50, 1.84, 2.22, 2.50
+SIGNAL020, xi_bar_mse_e150_mmse-lsa, 1.25, 1.54, 1.95, 2.46, 2.87
+SIGNAL020, xi_bar_e150_mmse-lsa, 1.24, 1.55, 1.98, 2.45, 2.85
+SIGNAL020, xi_gamma_bar_mse_e150_mmse-lsa, 1.25, 1.56, 1.96, 2.43, 2.87
+SIGNAL020, xi_gamma_bar_e150_mmse-lsa, 1.20, 1.49, 1.90, 2.40, 2.88
+SIGNAL020, xi_gamma_db_norm_mse_e150_mmse-lsa
+SIGNAL020, xi_gamma_db_norm_e150_mmse-lsa

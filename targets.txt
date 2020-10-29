@@ -1,0 +1,14 @@
+$|S|'$
+$|S_{\rm dB}|$
+$z(|S_{\rm dB}|)$
+$|S_{\rm dB}|'$
+$F(|S_{\rm dB}|)$
+$\xi'$
+$\xi_{\rm dB}$
+$z(\xi_{\rm dB})$
+$\xi_{\rm dB}'$
+$F(\xi_{\rm dB})$
+$\big[\xi';\gamma'\big]$
+$\big[\xi_{\rm dB};\gamma_{\rm dB}\big]$
+$\big[\xi_{\rm dB}';\gamma_{\rm dB}'\big]$
+$\big[F(\xi_{\rm dB});F(\gamma_{\rm dB})\big]$

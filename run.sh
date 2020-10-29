@@ -1,26 +1,40 @@
 #!/bin/bash
 
-DEMAND_VB=1
+chmod +x ./config.sh
+. ./config.sh
 
-if [ $DEMAND_VB ]
+if [ $DATASET == 'demand_vb' ]
 then
-  chmod +x ./config_demand_vb.sh
-  . ./config_demand_vb.sh
-  DEMAND_VB_VER="_demand_vb"
-  VAL_FLAG=0
-  MIN_SNR=0
-  MAX_SNR=15
-  SNR_INTER=5
-else
-  chmod +x ./config.sh
-  . ./config.sh
-  DEMAND_VB_VER=""
-  VAL_FLAG=1
-  MIN_SNR=-10
-  MAX_SNR=20
-  SNR_INTER=1
+    chmod +x ./paths_demand_vb.sh
+    . ./paths_demand_vb.sh
+    DEMAND_VB_VER="_demand_vb"
+    VAL_FLAG=0
+    MIN_SNR=0
+    MAX_SNR=15
+    SNR_INTER=5
 fi
 
+if [ $DATASET == 'deep_xi' ]
+then
+    chmod +x ./paths_deep_xi.sh
+    . ./paths_deep_xi.sh
+    DEMAND_VB_VER=""
+    VAL_FLAG=1
+    MIN_SNR=-10
+    MAX_SNR=20
+    SNR_INTER=1
+fi
+
+if [ $DATASET == 'chime5' ]
+then
+    chmod +x ./paths_chime5.sh
+    . ./paths_chime5.sh
+    DEMAND_VB_VER=""
+    VAL_FLAG=1
+    MIN_SNR=-10
+    MAX_SNR=20
+    SNR_INTER=1
+fi
 cd ../DeepXi
 
 NETWORK='ResNetV3'
@@ -35,851 +49,302 @@ SAMPLE_SIZE=1000
 F_S=16000
 T_D=32
 T_S=16
-MAX_EPOCHS=200
 TEST_EPOCH="100,125,150,175,200"
 MBATCH_SIZE=8
+MAX_EPOCHS=200
+MAP_PARAMS=0
 
-if [ $VER$DEMAND_VB_VER == 'fft_mask'$DEMAND_VB_VER ]
+if [ $VER$DEMAND_VB_VER == 'smm'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "ReLU"                      \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagFFTMask'                \
-                    --map_type          'Clip'                      \
-                    --map_params        "0.0,10.0"                  \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="ReLU"
+    INP_TGT_TYPE='MagSMM'
+    MAP_TYPE='Clip'
+    MAP_PARAMS='0.0,1.0'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'mmse-stsa_db'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Linear"                    \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagGain'                   \
-                    --map_type          'SquareDB'                  \
-                    --gain              'mmse-stsa'                 \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT='Linear'
+    INP_TGT_TYPE='MagGain'
+    MAP_TYPE='SquareDB'
+    gain='mmse-stsa'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'mmse-lsa_db'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Linear"                    \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagGain'                   \
-                    --map_type          'SquareDB'                  \
-                    --gain              'mmse-lsa'                  \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT='Linear'
+    INP_TGT_TYPE='MagGain'
+    MAP_TYPE='SquareDB'
+    gain='mmse-lsa'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'irm_mse'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Sigmoid"                   \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagGain'                   \
-                    --gain              'irm'                       \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagGain'
+    gain='irm'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'irm'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "BinaryCrossentropy"        \
-                    --outp_act          "Sigmoid"                   \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagGain'                   \
-                    --gain              'irm'                       \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="BinaryCrossentropy"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagGain'
+    gain='irm'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'ibm_mse'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Sigmoid"                   \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagGain'                   \
-                    --gain              'ibm'                       \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagGain'
+    gain='ibm'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'ibm'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "BinaryCrossentropy"        \
-                    --outp_act          "Sigmoid"                   \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagGain'                   \
-                    --gain              'ibm'                       \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="BinaryCrossentropy"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagGain'
+    gain='ibm'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'mag_bar_mse'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Sigmoid"                   \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagMag'                    \
-                    --map_type          'SquareDBNormalCDF'         \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagMag'
+    MAP_TYPE='SquareDBNormalCDF'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'mag_bar'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "BinaryCrossentropy"        \
-                    --outp_act          "Sigmoid"                   \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagMag'                    \
-                    --map_type          'SquareDBNormalCDF'         \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="BinaryCrossentropy"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagMag'
+    MAP_TYPE='SquareDBNormalCDF'
+fi
+
+if [ $VER$DEMAND_VB_VER == 'pow_db_norm_mse'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagMag'
+    MAP_TYPE='SquareDBMinMaxScaling'
+fi
+
+if [ $VER$DEMAND_VB_VER == 'pow_db_norm'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="BinaryCrossentropy"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagMag'
+    MAP_TYPE='SquareDBMinMaxScaling'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'pow_db_std'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Linear"                    \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagMag'                    \
-                    --map_type          'SquareDBStandardise'       \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT='Linear'
+    INP_TGT_TYPE='MagMag'
+    MAP_TYPE='SquareDBStandardise'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'pow_db'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Linear"                    \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagMag'                    \
-                    --map_type          'SquareDB'                  \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT='Linear'
+    INP_TGT_TYPE='MagMag'
+    MAP_TYPE='SquareDB'
+fi
+
+if [ $VER$DEMAND_VB_VER == 'mag_norm_mse'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagMag'
+    MAP_TYPE='MinMaxScaling'
+fi
+
+if [ $VER$DEMAND_VB_VER == 'mag_norm'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="BinaryCrossentropy"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagMag'
+    MAP_TYPE='MinMaxScaling'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'xi_gamma_bar_mse'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Sigmoid"                   \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagXiGamma'                \
-                    --map_type          'DBNormalCDF,DBLaplaceCDF'  \
-                    --map_params        'None;0.0'                  \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagXiGamma'
+    MAP_TYPE='DBNormalCDF,DBLaplaceCDF'
+    MAP_PARAMS='None;0.0'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'xi_gamma_bar'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "BinaryCrossentropy"        \
-                    --outp_act          "Sigmoid"                   \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagXiGamma'                \
-                    --map_type          'DBNormalCDF,DBLaplaceCDF'  \
-                    --map_params        'None;0.0'                  \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="BinaryCrossentropy"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagXiGamma'
+    MAP_TYPE='DBNormalCDF,DBLaplaceCDF'
+    MAP_PARAMS='None;0.0'
+fi
+
+if [ $VER$DEMAND_VB_VER == 'xi_gamma_db_norm'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="BinaryCrossentropy"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagXiGamma'
+    MAP_TYPE='DBMinMaxScaling,DBMinMaxScaling'
+	MAP_PARAMS='0.0;0.0'
+fi
+
+if [ $VER$DEMAND_VB_VER == 'xi_gamma_db_norm_mse'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagXiGamma'
+    MAP_TYPE='DBMinMaxScaling,DBMinMaxScaling'
+	MAP_PARAMS='0.0;0.0'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'xi_gamma_db'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Linear"                    \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagXiGamma'                \
-                    --map_type          'DB,DB'                     \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --log_path          $LOG_PATH                   \
-                    --set_path          $SET_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT='Linear'
+    INP_TGT_TYPE='MagXiGamma'
+    MAP_TYPE='DB,DB'
+	MAP_PARAMS='0.0;0.0'
+fi
+
+if [ $VER$DEMAND_VB_VER == 'xi_gamma_norm'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="BinaryCrossentropy"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagXiGamma'
+    MAP_TYPE='MinMaxScaling,MinMaxScaling'
+	MAP_PARAMS='0.0;0.0'
+fi
+
+if [ $VER$DEMAND_VB_VER == 'xi_gamma_norm_mse'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagXiGamma'
+    MAP_TYPE='MinMaxScaling,MinMaxScaling'
+	MAP_PARAMS='0.0;0.0'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'xi_bar_mse'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Sigmoid"                   \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagXi'                     \
-                    --map_type          'DBNormalCDF'               \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --set_path          $SET_PATH                   \
-                    --log_path          $LOG_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE="MagXi"
+    MAP_TYPE="DBNormalCDF"
 fi
 
 if [ $VER$DEMAND_VB_VER == 'xi_bar'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "BinaryCrossentropy"        \
-                    --outp_act          "Sigmoid"                   \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagXi'                     \
-                    --map_type          'DBNormalCDF'               \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --set_path          $SET_PATH                   \
-                    --log_path          $LOG_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="BinaryCrossentropy"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE="MagXi"
+    MAP_TYPE="DBNormalCDF"
+fi
+
+if [ $VER$DEMAND_VB_VER == 'xi_db_norm'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="BinaryCrossentropy"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagXi'
+    MAP_TYPE='DBMinMaxScaling'
+fi
+
+if [ $VER$DEMAND_VB_VER == 'xi_db_norm_mse'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagXi'
+    MAP_TYPE='DBMinMaxScaling'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'xi_db_std'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Linear"                    \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagXi'                     \
-                    --map_type          'DBStandardise'             \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --set_path          $SET_PATH                   \
-                    --log_path          $LOG_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Linear"
+    INP_TGT_TYPE='MagXi'
+    MAP_TYPE='DBStandardise'
 fi
 
 if [ $VER$DEMAND_VB_VER == 'xi_db'$DEMAND_VB_VER ]
 then
-    python3 main.py --ver               $VER$DEMAND_VB_VER          \
-                    --network           $NETWORK                    \
-                    --d_model           $D_MODEL                    \
-                    --n_blocks          $N_BLOCKS                   \
-                    --d_f               $D_F                        \
-                    --k                 $K                          \
-                    --max_d_rate        $MAX_D_RATE                 \
-                    --causal            $CAUSAL                     \
-                    --unit_type         $UNIT_TYPE                  \
-                    --loss_fnc          "MeanSquaredError"          \
-                    --outp_act          "Linear"                    \
-                    --max_epochs        $MAX_EPOCHS                 \
-                    --resume_epoch      0                           \
-                    --test_epoch        $TEST_EPOCH                 \
-                    --mbatch_size       $MBATCH_SIZE                \
-                    --inp_tgt_type      'MagXi'                     \
-                    --map_type          'DB'                        \
-                    --sample_size       $SAMPLE_SIZE                \
-                    --f_s               $F_S                        \
-                    --T_d               $T_D                        \
-                    --T_s               $T_S                        \
-                    --min_snr           $MIN_SNR                    \
-                    --max_snr           $MAX_SNR                    \
-                    --snr_inter         $SNR_INTER                  \
-                    --out_type          $OUT_TYPE                   \
-                    --save_model        1                           \
-                    --log_iter          0                           \
-                    --eval_example      1                           \
-                    --reset_inp_tgt     $RESET_INP_TGT              \
-                    --val_flag          $VAL_FLAG                   \
-                    --gain              $GAIN                       \
-                    --train             $TRAIN                      \
-                    --infer             $INFER                      \
-                    --test              $TEST                       \
-                    --gpu               $GPU                        \
-                    --set_path          $SET_PATH                   \
-                    --log_path          $LOG_PATH                   \
-                    --data_path         $DATA_PATH                  \
-                    --test_x_path       $TEST_X_PATH                \
-                    --test_s_path       $TEST_S_PATH                \
-                    --test_d_path       $TEST_D_PATH                \
-                    --out_path          $OUT_PATH                   \
-                    --model_path        $MODEL_PATH
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Linear"
+    INP_TGT_TYPE='MagXi'
+    MAP_TYPE='DB'
 fi
+
+if [ $VER$DEMAND_VB_VER == 'xi_norm'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="BinaryCrossentropy"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagXi'
+    MAP_TYPE='MinMaxScaling'
+fi
+
+if [ $VER$DEMAND_VB_VER == 'xi_norm_mse'$DEMAND_VB_VER ]
+then
+    LOSS_FNC="MeanSquaredError"
+    OUTP_ACT="Sigmoid"
+    INP_TGT_TYPE='MagXi'
+    MAP_TYPE='MinMaxScaling'
+fi
+
+python3 main.py --ver               $VER$DEMAND_VB_VER          \
+                --network           $NETWORK                    \
+                --d_model           $D_MODEL                    \
+                --n_blocks          $N_BLOCKS                   \
+                --d_f               $D_F                        \
+                --k                 $K                          \
+                --max_d_rate        $MAX_D_RATE                 \
+                --causal            $CAUSAL                     \
+                --unit_type         $UNIT_TYPE                  \
+                --loss_fnc          $LOSS_FNC                   \
+                --outp_act          $OUTP_ACT                   \
+                --max_epochs        $MAX_EPOCHS                 \
+                --resume_epoch      $RESUME_EPOCH               \
+                --test_epoch        $TEST_EPOCH                 \
+                --mbatch_size       $MBATCH_SIZE                \
+                --inp_tgt_type      $INP_TGT_TYPE               \
+                --map_type          $MAP_TYPE                   \
+                --map_params        $MAP_PARAMS                 \
+                --sample_size       $SAMPLE_SIZE                \
+                --f_s               $F_S                        \
+                --T_d               $T_D                        \
+                --T_s               $T_S                        \
+                --min_snr           $MIN_SNR                    \
+                --max_snr           $MAX_SNR                    \
+                --snr_inter         $SNR_INTER                  \
+                --out_type          $OUT_TYPE                   \
+                --save_model        1                           \
+                --log_iter          0                           \
+                --eval_example      1                           \
+                --reset_inp_tgt     $RESET_INP_TGT              \
+                --val_flag          $VAL_FLAG                   \
+                --gain              $GAIN                       \
+                --train             $TRAIN                      \
+                --infer             $INFER                      \
+                --test              $TEST                       \
+                --gpu               $GPU                        \
+                --set_path          $SET_PATH                   \
+                --log_path          $LOG_PATH                   \
+                --data_path         $DATA_PATH                  \
+                --test_x_path       $TEST_X_PATH                \
+                --test_s_path       $TEST_S_PATH                \
+                --test_d_path       $TEST_D_PATH                \
+                --out_path          $OUT_PATH                   \
+                --model_path        $MODEL_PATH

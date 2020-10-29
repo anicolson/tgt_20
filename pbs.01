@@ -1,0 +1,16 @@
+#!/bin/bash
+#PBS -m abe
+###PBS -M aaron.nicolson@griffithuni.edu.au
+#PBS -N deep_xi_tgt_20
+#PBS -q dljun
+#PBS -j oe
+#PBS -o /export/home/s2842809/log.out
+#PBS -l select=1:ncpus=12:ngpus=1:mem=32gb,walltime=300:00:00
+cd  $PBS_O_WORKDIR
+cd /export/home/s2842809/tgt_20
+module load anaconda3/2019.07py3
+module load cuda/10.1
+source /export/home/s2842809/venv/DeepXi/bin/activate
+chmod +x ./jobs.sh
+./jobs.sh
+sleep 2

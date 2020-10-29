@@ -6,16 +6,20 @@
 %% file, You can obtain one at http://mozilla.org/MPL/2.0/.
 clear all; close all; clc;
 
-addpath('D:\Dropbox\lib\addnoise')
-addpath('D:\Dropbox\GitHub\matlab_feat\feat')
+% addpath('D:\Dropbox\lib\addnoise')
+% addpath('D:\Dropbox\GitHub\matlab_feat\feat')
 
 % addpath('C:\Users\aaron\Dropbox\lib\addnoise')
 % addpath('C:\Users\aaron\Dropbox\GitHub\matlab_feat\feat')
+
+addpath('~/Dropbox/lib/addnoise')
+addpath('~/Dropbox/GitHub/matlab_feat/feat')
+
 % % addpath(genpath('C:\Users\aaron\Dropbox\GitHub\DeepXi\dev'))
 
 %% PARAMETERS
 rng(43)
-n_samples = 50; % number of samples to consider.
+n_samples = 1000; % number of samples to consider.
 T_d = 32; % window duration (ms).
 T_s = 16; % window shift (ms).
 f_s = 16000; % sampling frequency (Hz).
@@ -28,11 +32,14 @@ x = s; d = s; y = s;
 
 %% PATHS
 
-s.paths = dir('D:\set\deep_xi_training_set\train_clean_speech\*.wav');
-d.paths = dir('D:\set\deep_xi_training_set\train_noise\*.wav');
+% s.paths = dir('D:\set\deep_xi_training_set\train_clean_speech\*.wav');
+% d.paths = dir('D:\set\deep_xi_training_set\train_noise\*.wav');
 
 % s.paths = dir('C:\Users\aaron\Desktop\deep_xi_test_set\test_clean_speech\*.wav');
 % d.paths = dir('C:\Users\aaron\Desktop\deep_xi_test_set\test_noise\*.wav');
+
+s.paths = dir('~/set/deep_xi_training_set/train_clean_speech/*.wav');
+d.paths = dir('~/set/deep_xi_training_set/train_noise/*.wav');
 
 rand_idx = randperm(length(s.paths)); % random index for test files.
 
@@ -41,7 +48,6 @@ set(0,'defaulttextinterpreter','latex')
 xi_samples = []; 
 gamma_samples = [];
 s_stms_samples = [];
-lsa_samples = [];
 for i = 1:n_samples
 	s.wav = audioread([s.paths(rand_idx(i)).folder, '/', s.paths(rand_idx(i)).name]); % clean speech.
     s.len = length(s.wav); % length of clean speech signal.
@@ -63,12 +69,10 @@ for i = 1:n_samples
     x = analysis_stft(x, 'polar'); % noisy speech STMS.
     xi = s.STMS.^2./d.STMS.^2; % instantaneous a priori SNR.
     gamma_ = x.STMS.^2./d.STMS.^2; % instantaneous a posteriori SNR.
-    G_mmse_lsa = gfunc(xi, gamma_, 'mmse-lsa');
     
     xi_samples = [xi_samples; single(xi)]; 
     gamma_samples = [gamma_samples; single(gamma_)];  
     s_stms_samples = [s_stms_samples; single(s.STMS)]; 
-    lsa_samples = [lsa_samples; single(G_mmse_lsa)]; 
 
     clc;
     fprintf('%3.2f%% completed.\n', 100*(i/n_samples));
@@ -103,135 +107,56 @@ s_stms_db = -110:0.1:40;
 s_stms_db_samples_k = 20*log10(s_stms_samples_k + 1e-12);
 s_stms_db_samples_k(s_stms_db_samples_k == Inf) = [];
 
-%%
-lsa = -0.2:0.1:10;
-lsa_samples_k = lsa_samples(:,k);
-lsa_db = -110:0.1:40;
-lsa_db_samples_k = 20*log10(lsa_samples_k + 1e-12);
-
-
 %% HISTOGRAMS
 figure (1)
 
-subplot(6,2,1);
-histogram(xi_samples_k, N, 'BinLimits', [xi(1), xi(end)], ...
+subplot(3,2,1);  
+histogram(s_stms_db_samples_k, N, 'BinLimits', [s_stms_db(1), s_stms_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey);
-xlim([xi(1), xi(end)])
-xlabel(['$\xi[:,$', num2str(k-1), ']']); 
+xlim([s_stms_db(1), s_stms_db(end)])
 ylabel('Count');
+xlabel(['$|S_{\rm dB}[:,$', num2str(k-1), '$]|$']); 
+title('{\bf (a)}')
 
-subplot(6,2,2);
-histogram(xi_samples_k, N, 'BinLimits', [xi(1), xi(end)], ...
+subplot(3,2,2);
+histogram(s_stms_db_samples_k, N, 'BinLimits', [s_stms_db(1), s_stms_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
-xlim([xi(1), xi(end)])
+xlim([s_stms_db(1), s_stms_db(end)])
 ylim([0 1])
-xlabel(['$\xi[:,$', num2str(k-1), ']']); 
-ylabel('Normalised cumulative count');
+xlabel(['$|S_{\rm dB}[:,$', num2str(k-1), '$]|$']); 
+ylabel('Cumulative count');
+title('{\bf (b)}')
 
-subplot(6,2,3);
+subplot(3,2,3);
 histogram(xi_db_samples_k, N, 'BinLimits', [xi_db(1), xi_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey);
 xlim([xi_db(1), xi_db(end)])
 ylabel('Count');
 xlabel(['$\xi_{\rm dB}[:,$', num2str(k-1), ']']); 
+title('{\bf (c)}')
 
-subplot(6,2,4);
+subplot(3,2,4);
 histogram(xi_db_samples_k, N, 'BinLimits', [xi_db(1), xi_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
 xlim([xi_db(1), xi_db(end)])
 ylim([0 1])
 xlabel(['$\xi_{\rm dB}[:,$', num2str(k-1), ']']); 
-ylabel('Normalised cumulative count');
+ylabel('Cumulative count');
+title('{\bf (d)}')
 
-subplot(6,2,5);
-histogram(gamma_samples_k, N, 'BinLimits', [gamma_(1), gamma_(end)], ...
-    'EdgeAlpha', 0.0, 'FaceColor', grey);
-xlim([gamma_(1), gamma_(end)])
-xlabel(['$\gamma[:,$', num2str(k-1), ']']); 
-ylabel('Count');
-
-subplot(6,2,6);
-histogram(gamma_samples_k, N, 'BinLimits', [gamma_(1), gamma_(end)], ...
-    'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
-xlim([gamma_(1), gamma_(end)])
-ylim([0 1])
-xlabel(['$\gamma[:,$', num2str(k-1), ']']); 
-ylabel('Normalised cumulative count');
-
-subplot(6,2,7);
+subplot(3,2,5);
 histogram(gamma_db_samples_k, N, 'BinLimits', [gamma_db(1), gamma_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey);
 xlim([gamma_db(1), gamma_db(end)])
 ylabel('Count');
 xlabel(['$\gamma_{\rm dB}[:,$', num2str(k-1), ']']); 
+title('{\bf (e)}')
 
-subplot(6,2,8);
+subplot(3,2,6);
 histogram(gamma_db_samples_k, N, 'BinLimits', [gamma_db(1), gamma_db(end)], ...
     'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
 xlim([gamma_db(1), gamma_db(end)])
 ylim([0 1])
 xlabel(['$\gamma_{\rm dB}[:,$', num2str(k-1), ']']); 
-ylabel('Normalised cumulative count');
-
-subplot(6,2,9);
-histogram(s_stms_samples_k, N, 'BinLimits', [s_stms(1), s_stms(end)], ...
-    'EdgeAlpha', 0.0, 'FaceColor', grey);
-xlim([s_stms(1), s_stms(end)])
-xlabel(['$|S[:,$', num2str(k-1), '$]|$']); 
-ylabel('Count');
-
-subplot(6,2,10);
-histogram(s_stms_samples_k, N, 'BinLimits', [s_stms(1), s_stms(end)], ...
-    'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
-xlim([s_stms(1), s_stms(end)])
-ylim([0 1])
-xlabel(['$|S[:,$', num2str(k-1), '$]|$']); 
-ylabel('Normalised cumulative count');
-
-subplot(6,2,11);
-histogram(s_stms_db_samples_k, N, 'BinLimits', [s_stms_db(1), s_stms_db(end)], ...
-    'EdgeAlpha', 0.0, 'FaceColor', grey);
-xlim([s_stms_db(1), s_stms_db(end)])
-ylabel('Count');
-xlabel(['$|S[:,$', num2str(k-1), '$]|$ (dB)']); 
-
-subplot(6,2,12);
-histogram(s_stms_db_samples_k, N, 'BinLimits', [s_stms_db(1), s_stms_db(end)], ...
-    'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
-xlim([s_stms_db(1), s_stms_db(end)])
-ylim([0 1])
-xlabel(['$|S[:,$', num2str(k-1), '$]|$ (dB)']); 
-ylabel('Normalised cumulative count');
-
-%% HISTOGRAMS
-figure (2)
-
-subplot(2,2,1);
-histogram(lsa_samples_k, N, 'BinLimits', [lsa(1), lsa(end)], ...
-    'EdgeAlpha', 0.0, 'FaceColor', grey);
-xlim([lsa(1), lsa(end)])
-xlabel(['$G_{\rm MMSE-LSA}[:,$', num2str(k-1), ']']); 
-ylabel('Count');
-
-subplot(2,2,2);
-histogram(lsa_samples_k, N, 'BinLimits', [xi(1), xi(end)], ...
-    'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
-xlim([xi(1), xi(end)])
-ylim([0 1])
-xlabel(['$G_{\rm MMSE-LSA}[:,$', num2str(k-1), ']']); 
-ylabel('Normalised cumulative count');
-
-subplot(2,2,3);
-histogram(lsa_db_samples_k, N, 'BinLimits', [lsa_db(1), lsa_db(end)], ...
-    'EdgeAlpha', 0.0, 'FaceColor', grey);
-xlim([lsa_db(1), lsa_db(end)])
-ylabel('Count');
-xlabel(['$G_{\rm MMSE-LSA}[:,$', num2str(k-1), '] (dB)']); 
-
-subplot(2,2,4);
-histogram(lsa_db_samples_k, N, 'BinLimits', [lsa_db(1), lsa_db(end)], ...
-    'EdgeAlpha', 0.0, 'FaceColor', grey, 'Normalization', 'cdf');
-xlim([lsa_db(1), lsa_db(end)])
-ylim([0 1])
-xlabel(['$G_{\rm MMSE-LSA}[:,$', num2str(k-1), '] (dB)']); 
-ylabel('Normalised cumulative count');
+ylabel('Cumulative count');
+title('{\bf (f)}')
