@@ -52,14 +52,26 @@ case `hostname` in
     OUT_PATH='/home/aaron/mnt/aaron_root/mnt/hdd1/out/'$PROJ_DIR
     MODEL_PATH='/home/aaron/mnt/fist/model/'$PROJ_DIR
     ;;
-*) echo "This workstation is not known. Using default paths."
-    LOG_PATH='log'
-    SET_PATH='set'
-    DATA_PATH='data'
-    TEST_X_PATH='set/test_noisy_speech'
-    TEST_S_PATH='set/test_clean_speech'
-    TEST_D_PATH='set/test_noise'
-    OUT_PATH='out'
-    MODEL_PATH='model'
-   ;;
+    *) case `whoami` in
+        nic261)  echo Running on a cluster.
+          LOG_PATH='/datasets/work/hb-mlaifsp-mm/work/tgt_20/log'
+          SET_PATH='/datasets/work/hb-mlaifsp-mm/source/Datasets/DEMAND_VB'
+          DATA_PATH='/datasets/work/hb-mlaifsp-mm/work/Data'
+          TEST_X_PATH='/datasets/work/hb-mlaifsp-mm/source/Datasets/DEMAND_VB/noisy_testset_wav/noisy_testset_wav'
+          TEST_D_PATH='dummy'
+          TEST_S_PATH='/datasets/work/hb-mlaifsp-mm/source/Datasets/DEMAND_VB/clean_testset_wav/clean_testset_wav'
+          OUT_PATH='/datasets/work/hb-mlaifsp-mm/work/Outputs/'$PROJ_DIR
+          MODEL_PATH='/datasets/work/hb-mlaifsp-mm/work/Models/'$PROJ_DIR
+        ;;
+      *) echo "This workstation is not known."
+          LOG_PATH='log'
+          SET_PATH='set'
+          DATA_PATH='data'
+          TEST_X_PATH='set/test_noisy_speech'
+          TEST_S_PATH='set/test_clean_speech'
+          TEST_D_PATH='set/test_noise'
+          OUT_PATH='out'
+          MODEL_PATH='model'
+        ;;
+      esac
 esac

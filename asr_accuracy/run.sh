@@ -16,16 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-EPOCH='e150'
-DEMAND_VB=''
-DIR_TEST='/home/aaron/mnt/aaron_root/mnt/hdd1/out/tgt_20'
-# DIR_SAVE='/home/aaron/mnt/aaron_root/mnt/hdd1/out/tgt_20/hyp_trans/demand_vb'
-DIR_SAVE='/home/aaron/mnt/aaron_root/mnt/hdd1/out/tgt_20/hyp_trans/'
-UNDERSCORE='_'
-
 ## VERSION CONTROL
-test_set=$DIR_TEST'/xi_gamma_db_norm_mse'$DEMAND_VB'/'$EPOCH'/y/mmse-lsa'
-out_path=$DIR_SAVE'/xi_gamma_db_norm_mse'$UNDERSCORE$EPOCH$UNDERSCORE'mmse-lsa'
+test_set=$1
+out_path=$2
 
 # test_set=/home/aaron/mnt/aaron/set/DEMAND_VB/noisy_testset_wav
 # out_path=$DIR_SAVE'/noisy_speech'
@@ -34,12 +27,16 @@ out_path=$DIR_SAVE'/xi_gamma_db_norm_mse'$UNDERSCORE$EPOCH$UNDERSCORE'mmse-lsa'
 [ -d $out_path ] || mkdir -p $out_path
 
 ## PATH TO MODEL AND SCORER
-MODEL=~/model/deepspeech/deepspeech-0.7.4-models.pbmm
-SCORER=~/model/deepspeech/deepspeech-0.7.4-models.scorer
+# MODEL=/mnt/c/Users/nic261/Models/deepspeech/deepspeech-0.7.4-models.pbmm
+# SCORER=/mnt/c/Users/nic261/Models/deepspeech/deepspeech-0.7.4-models.scorer
 
-nvidia-smi
-echo -n "GPU no.: "
-read GPU
+MODEL=/datasets/work/hb-mlaifsp-mm/source/Checkpoints/deepspeech/0.7.4/deepspeech-0.7.4-models.pbmm
+SCORER=/datasets/work/hb-mlaifsp-mm/source/Checkpoints/deepspeech/0.7.4/deepspeech-0.7.4-models.scorer
+
+# nvidia-smi
+# echo -n "GPU no.: "
+# read GPU
+GPU=0
 export CUDA_VISIBLE_DEVICES=$GPU
 
 source $HOME/venv/deepspeech/bin/activate

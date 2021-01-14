@@ -49,6 +49,7 @@ GAIN='mmse-lsa'
 RESET_INP_TGT=0
 RESUME_EPOCH=0
 DATASET=
+NETWORK=
 
 for ARGUMENT in "$@"
 do
@@ -65,6 +66,7 @@ do
             RESET_INP_TGT)       RESET_INP_TGT=${VALUE} ;;
             RESUME_EPOCH)        RESUME_EPOCH=${VALUE} ;;
             DATASET)             DATASET=${VALUE} ;;
+            NETWORK)             NETWORK=${VALUE} ;;
             *)
     esac
 done
